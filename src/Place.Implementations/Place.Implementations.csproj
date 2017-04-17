@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Grains\BlacklistGrain.cs" />
+    <Compile Include="Grains\PixelSliceGrain.cs" />
     <Compile Include="Grains\UserGrain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
