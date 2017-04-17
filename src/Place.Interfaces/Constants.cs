@@ -6,7 +6,7 @@ namespace Place.Interfaces
     {
         public const int Width = 1000;
         public const int Height = 1000;
-        public const int WriteRateSeconds = 5;
+        public const int WriteRateSeconds = 0;
         public const int SliceSize = 1000;
         public const int TotalPixels = Width * Height;
     }
