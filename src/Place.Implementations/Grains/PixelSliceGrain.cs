@@ -13,7 +13,7 @@ namespace Place.Implementations.Grains
     {
         private PixelSlice _slice;
 
-        private short Offset => SliceHelpers.GetOffset((int)this.GetPrimaryKeyLong());
+        private int Offset => SliceHelpers.GetOffset((int)this.GetPrimaryKeyLong());
 
         public override Task OnActivateAsync()
         {
@@ -49,12 +49,12 @@ namespace Place.Implementations.Grains
         public Task WritePixel(WritePixelCommand command)
         {
             var index = SliceHelpers.GetIndex(command.X, command.Y);
-            var relativeIndex = index = Offset;
+            var relativeIndex = index - Offset;
 
             var pixel = _slice.Pixels[relativeIndex];
 
             //only replace pixel if new command is newer.
-            if (command.Timestamp >= pixel.LastTimestamp)
+            if (command.Timestamp >= pixel.LastTimestamp || !pixel.LastTimestamp.HasValue)
             {
                 pixel.Color = command.Color;
                 pixel.LastAuthor = command.Author;

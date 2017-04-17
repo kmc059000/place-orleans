@@ -18,9 +18,9 @@ namespace Place.Interfaces
             return (x + (y * Constants.Width)) / Constants.SliceSize;
         }
 
-        public static short GetOffset(int sliceKey)
+        public static int GetOffset(int sliceKey)
         {
-            return (short)(sliceKey * Constants.SliceSize);
+            return (sliceKey * Constants.SliceSize);
         }
 
         public static int GetIndex(int x, int y)
