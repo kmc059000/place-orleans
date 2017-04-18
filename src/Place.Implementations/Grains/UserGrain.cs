@@ -13,6 +13,8 @@ namespace Place.Implementations.Grains
 
         private DateTime? LastWrite { get; set; }
 
+        private int RateLimitedRequests = 0;
+
         public Task<string> GetUsername()
         {
             return Task.FromResult(this.GetPrimaryKeyString());
@@ -26,6 +28,16 @@ namespace Place.Implementations.Grains
         public Task<bool> IsRateLimited()
         {
             var isRateLimited = LastWrite.HasValue && LastWrite.Value.Add(MaxWriteRate) > DateTime.UtcNow;
+
+            if(isRateLimited)
+            {
+                RateLimitedRequests++;
+            }
+            else
+            {
+                RateLimitedRequests = 0;
+            }
+
             return Task.FromResult(isRateLimited);
         }
 
@@ -33,6 +45,9 @@ namespace Place.Implementations.Grains
         {
             if(await IsRateLimited() || await IsBlacklisted())
             {
+                //throttle user
+                await Task.Delay(TimeSpan.FromSeconds(RateLimitedRequests));
+
                 return;
             }
 
