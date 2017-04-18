@@ -126,7 +126,7 @@ namespace Places.TestClient
             return TaskDone.Done;
         }
 
-        private async static Task RunBatchUsingHttp(int count, Random random)
+        private static Task RunBatchUsingHttp(int count, Random random)
         {
             var tasks = new List<Task<HttpResponseMessage>>();
 
@@ -157,6 +157,8 @@ namespace Places.TestClient
 
                 Task.WaitAll(tasks.ToArray());
             }
+
+            return TaskDone.Done;
         }
     }
 }
