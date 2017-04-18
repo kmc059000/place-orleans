@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using Newtonsoft.Json;
+using Orleans;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using Place.Interfaces;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,7 +75,8 @@ namespace Places.TestClient
             {
                 stopwatch.Start();
 
-                await RunBatchOf300(random);
+                //await RunBatch(300, random);
+                await RunBatchUsingHttp(300, random);
 
                 stopwatch.Stop();
 
@@ -87,11 +90,11 @@ namespace Places.TestClient
             }
         }
 
-        private static Task RunBatchOf300(Random random)
+        private static Task RunBatch(int count, Random random)
         {
             List<Task> tasks = new List<Task>();
 
-            var i = 300;
+            var i = count;
             while (i-- > 0)
             {
                 var userid = random.Next() % 10;
@@ -121,6 +124,39 @@ namespace Places.TestClient
             Task.WaitAll(tasks.ToArray());
 
             return TaskDone.Done;
+        }
+
+        private async static Task RunBatchUsingHttp(int count, Random random)
+        {
+            var tasks = new List<Task<HttpResponseMessage>>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                var i = count;
+                while (i-- > 0)
+                {
+                    var userid = random.Next() % 10;
+                    var x = random.Next() % Constants.Width;
+                    var y = random.Next() % Constants.Height;
+
+                    var color = (Colors)(random.Next() % 256);
+
+                    string username = $"TestClient_{userid}";
+
+                    var request = new
+                    {
+                        X = x,
+                        Y = y,
+                        Color = color,
+                    };
+
+                    var httpRequest = client.PostAsync("http://localhost:8080/api/pixel/", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+
+                    tasks.Add(httpRequest);
+                }
+
+                Task.WaitAll(tasks.ToArray());
+            }
         }
     }
 }

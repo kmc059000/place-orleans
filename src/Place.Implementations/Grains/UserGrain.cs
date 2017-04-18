@@ -25,7 +25,7 @@ namespace Place.Implementations.Grains
 
         public Task<bool> IsRateLimited()
         {
-            var isRateLimited = LastWrite.HasValue && LastWrite.Value.Add(MaxWriteRate) > DateTime.Now;
+            var isRateLimited = LastWrite.HasValue && LastWrite.Value.Add(MaxWriteRate) > DateTime.UtcNow;
             return Task.FromResult(isRateLimited);
         }
 
@@ -39,6 +39,8 @@ namespace Place.Implementations.Grains
             var slice = GrainFactory.GetGrain<IPixelSliceGrain>(command.SliceKey);
 
             await slice.WritePixel(command);
+
+            LastWrite = DateTime.UtcNow;
         }
     }
 }
