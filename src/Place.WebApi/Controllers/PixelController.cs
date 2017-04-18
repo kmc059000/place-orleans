@@ -39,8 +39,6 @@ namespace Place.WebApi.Controllers
                 result = BadRequest(ModelState);
             }
 
-            await Task.Delay(10);
-
             return result;
         }
 
